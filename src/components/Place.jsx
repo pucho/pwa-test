@@ -42,6 +42,10 @@ export default styled(Place)`
   .resto-title {
     flex: 0 0 90%;
   }
+  ${media.tablet`
+    margin-left: 15%;
+    margin-right: 15%;
+  `};
   ${media.mobile`
     margin-left: 5%;
     margin-right: 5%;
