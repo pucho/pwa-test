@@ -19,6 +19,14 @@ class App extends Component {
     restaurants: []
   };
 
+  componentWillMount() {
+    const cachedHits = localStorage.getItem('restaurants');
+    if (cachedHits) {
+      this.setState({ restaurants: JSON.parse(cachedHits) });
+      return;
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     console.log(nextProps.coords);
     if (nextProps.coords) {
@@ -31,12 +39,18 @@ class App extends Component {
       client_id: process.env.REACT_APP_FS_CLIENTID,
       client_secret: process.env.REACT_APP_FS_CLIENTSECRET,
       ll: `${coords.latitude}, ${coords.longitude}`,
+      query: 'restaurant',
+      radius: 1000,
       v: '20180323'
     });
     axios
       .get(`https://api.foursquare.com/v2/venues/search?${queryString}`)
       .then(data => {
         this.setState({ restaurants: data.data.response.venues });
+        localStorage.setItem(
+          'restaurants',
+          JSON.stringify(data.data.response.venues)
+        );
       });
   };
   render() {
