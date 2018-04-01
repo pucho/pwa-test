@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { geolocated } from 'react-geolocated';
 import axios from 'axios';
 import qs from 'qs';
-import ReactList from 'react-list';
 
-import logo from './logo.svg';
+import './App.css';
+import loader from './assets/Spinner-1s-100px.gif';
 
 import TopBar from './components/shared/TopBar';
 import Place from './components/Place';
@@ -34,7 +34,6 @@ class App extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.coords);
     if (nextProps.coords) {
       this.getRestaurantsByLoc(nextProps.coords);
     }
@@ -90,7 +89,7 @@ class App extends Component {
 
   favoriteRestaurant = restaurantID => {
     let favorites = [...this.state.favorites];
-    if (favorites.lenght > 0 && favorites.find(restaurantID)) {
+    if (favorites.length > 0 && favorites.includes(restaurantID)) {
       favorites = favorites.filter(favorite => {
         return favorite !== restaurantID;
       });
@@ -101,7 +100,6 @@ class App extends Component {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   };
   render() {
-    console.log(this.state.restaurants);
     return (
       <div className={this.props.className}>
         <TopBar
@@ -138,6 +136,20 @@ class App extends Component {
                 />
               );
             })}
+
+        {this.state.favorites.length === 0 &&
+          this.state.selectedList === 'favs' && (
+            <h1 style={{ textAlign: 'center' }}>
+              You don't have any favorites!
+            </h1>
+          )}
+        {this.state.restaurants.length === 0 &&
+          this.state.selectedList === 'places' && (
+            <div style={{ textAlign: 'center' }}>
+              <h1>Loading restaurants...</h1>
+              <img src={loader} alt="" />
+            </div>
+          )}
       </div>
     );
   }
@@ -151,5 +163,6 @@ export default geolocated({
 })(styled(App)`
   background-color: #3d3dd8;
   color: white;
-  max-height: 100%;
+  height: auto;
+  padding-bottom: 20px;
 `);

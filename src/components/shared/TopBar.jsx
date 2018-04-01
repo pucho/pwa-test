@@ -40,6 +40,7 @@ export default styled(TopBar)`
   display: flex;
   height: 50px;
   line-height: 54px;
+  margin-bottom: 30px;
   position: sticky;
   text-align: center;
   top: 0;

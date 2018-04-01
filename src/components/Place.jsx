@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
+import media from './constants/mediaQueries';
 import Favorite from './shared/Favorite';
 
 class Place extends Component {
@@ -34,11 +35,15 @@ export default styled(Place)`
   height: 60px;
   justify-content: space-around;
   margin: 10px;
+  margin-left: 30%;
+  margin-right: 30%;
   padding: 2px;
   flex: 1;
   .resto-title {
     flex: 0 0 90%;
   }
-  .fav {
-  }
+  ${media.mobile`
+    margin-left: 5%;
+    margin-right: 5%;
+  `};
 `;
