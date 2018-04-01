@@ -10,8 +10,24 @@ class TopBar extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        <div className="bar-child">Places</div>
-        <div className="bar-child">Favorites</div>
+        <div
+          id="places"
+          className={`bar-child ${
+            this.props.selectedList === 'places' ? 'selected' : ''
+          }`}
+          onClick={e => this.props.selectList(e.target.id)}
+        >
+          Places
+        </div>
+        <div
+          id="favs"
+          className={`bar-child ${
+            this.props.selectedList === 'favs' ? 'selected' : ''
+          }`}
+          onClick={e => this.props.selectList(e.target.id)}
+        >
+          Favorites
+        </div>
       </div>
     );
   }
@@ -19,14 +35,20 @@ class TopBar extends Component {
 
 export default styled(TopBar)`
   align-items: center;
-  border-bottom: 2px solid grey;
+  background-color: #1616b5;
+  cursor: pointer;
   display: flex;
   height: 50px;
+  line-height: 54px;
+  position: sticky;
   text-align: center;
-  :first-child {
-    border-right: 2px solid grey;
-  }
+  top: 0;
+  z-index: 100;
   .bar-child {
     flex: 1;
+    height: 100%;
+  }
+  .selected {
+    background-color: #3d3dd8;
   }
 `;

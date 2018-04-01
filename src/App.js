@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import { geolocated } from 'react-geolocated';
 import axios from 'axios';
 import qs from 'qs';
+import ReactList from 'react-list';
 
 import logo from './logo.svg';
 
 import TopBar from './components/shared/TopBar';
-import Places from './components/Places';
+import Place from './components/Place';
 
 class App extends Component {
   static propTypes = {
@@ -16,14 +17,19 @@ class App extends Component {
   };
 
   state = {
-    restaurants: []
+    favorites: [],
+    restaurants: [],
+    selectedList: 'places'
   };
 
   componentWillMount() {
-    const cachedHits = localStorage.getItem('restaurants');
-    if (cachedHits) {
-      this.setState({ restaurants: JSON.parse(cachedHits) });
-      return;
+    const restaurants = localStorage.getItem('restaurants');
+    const favorites = localStorage.getItem('favorites');
+    if (restaurants) {
+      this.setState({ restaurants: JSON.parse(restaurants) });
+    }
+    if (favorites) {
+      this.setState({ favorites: JSON.parse(favorites) });
     }
   }
 
@@ -53,15 +59,85 @@ class App extends Component {
         );
       });
   };
+
+  selectList = id => {
+    this.setState({ selectedList: id });
+  };
+
+  renderRestaurant = (index, key) => {
+    return (
+      <Place
+        key={key}
+        id={this.state.restaurants[index].id}
+        name={this.state.restaurants[index].name}
+        favClick={this.favoriteRestaurant}
+        favorited={this.state.favorites.includes(
+          this.state.restaurants[index].id
+        )}
+      />
+    );
+  };
+
+  renderFavorite = (index, key) => {
+    return (
+      <Place
+        key={key}
+        name={this.state.favorites[index]}
+        favClick={this.favoriteRestaurant}
+      />
+    );
+  };
+
+  favoriteRestaurant = restaurantID => {
+    let favorites = [...this.state.favorites];
+    if (favorites.lenght > 0 && favorites.find(restaurantID)) {
+      favorites = favorites.filter(favorite => {
+        return favorite !== restaurantID;
+      });
+    } else {
+      favorites.push(restaurantID);
+    }
+    this.setState({ favorites });
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  };
   render() {
-    console.log(this.props);
+    console.log(this.state.restaurants);
     return (
       <div className={this.props.className}>
-        <TopBar />
+        <TopBar
+          selectedList={this.state.selectedList}
+          selectList={this.selectList}
+        />
         {this.state.restaurants.length > 0 &&
+          this.state.selectedList === 'places' &&
           this.state.restaurants.map(restaurant => {
-            return <Places key={restaurant.id} name={restaurant.name} />;
+            return (
+              <Place
+                key={restaurant.id}
+                id={restaurant.id}
+                name={restaurant.name}
+                favClick={this.favoriteRestaurant}
+                favorited={this.state.favorites.includes(restaurant.id)}
+              />
+            );
           })}
+        {this.state.favorites.length > 0 &&
+          this.state.selectedList === 'favs' &&
+          this.state.restaurants
+            .filter(restaurant => {
+              return this.state.favorites.includes(restaurant.id);
+            })
+            .map(restaurant => {
+              return (
+                <Place
+                  key={restaurant.id}
+                  id={restaurant.id}
+                  name={restaurant.name}
+                  favClick={this.favoriteRestaurant}
+                  favorited={this.state.favorites.includes(restaurant.id)}
+                />
+              );
+            })}
       </div>
     );
   }
@@ -75,5 +151,5 @@ export default geolocated({
 })(styled(App)`
   background-color: #3d3dd8;
   color: white;
-  height: 100vh;
+  max-height: 100%;
 `);
